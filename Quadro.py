@@ -1,19 +1,24 @@
 class QuadroDados:
-    def __init__(self, init, destination, source, payload):
+    def __init__(self,destination, source, payload):
         self.delimiter = bytes.fromHex('7E')
         self.length = bytes.fromHex(len(payload))
-        self.sequence = None
-        self.destinationAddress = bytes.fromHext(destination)
-        self.sourceAddress = bytes.fromhex(source)
+        self.sequence = self.calculoSequence()
+        self.destinationAddress = bytes.fromHex(destination)
+        self.sourceAddress = bytes.fromHex(source)
         self.payload = str(payload).encode('ascii')
-        self.crc = None
+        self.crc = self.calculoCRC()
+
+        #80
+        #00
     
 
     #Todo: Calcular CRC
-    def CalculoCRC(self);
+    def calculoCRC(self);
         return None
     
-    #bytes from hex
+    #Todo: Calcular Sequence
+    def calculoSequence(self):
+        
     
     #A ideia aqui é retornar a mensagem de modo que ela esteja pronta para ser enviada
     def __str__(self):
