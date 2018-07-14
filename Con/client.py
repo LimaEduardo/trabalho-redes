@@ -30,7 +30,7 @@ def divideMsg(msg, tamMax):
     
 def main():
     HOST = "177.105.60.169"     # Endereco IP do Servidor 55
-    PORT = 60660                 # Porta que o Servidor esta
+    PORT = 6060                 # Porta que o Servidor esta
 
     # HOST = "177.105.60.155"
     # PORT = 50017                 
@@ -45,20 +45,19 @@ def main():
     # capturando o meu IP
     meuIP = conectionTcp.getsockname()[0]
 
-    msg = "Meu nome e Gabriel" #Ribeiro Oliveira e isso e um trabalho"
+    msg = "Que merda doioooo990"
     
     msg = divideMsg(msg, MAX_LENGHT)
     print(msg)
     for indice,mensagem in enumerate(msg):
         msg[indice] = QuadroDados(HOST, meuIP, mensagem, str(indice%2)).getQuadro()
-        msgEnvio = msg[indice].encode('ascii')
 
-        conectionTcp.send(msgEnvio)
-        buffer = conectionTcp.recv(2048)
+        conectionTcp.send(msg[indice])
+        # buffer = conectionTcp.recv(1024)
 
-        print("Server diz: ", buffer.decode('ascii'))
+        # print("Server diz: ", buffer.decode('ascii'))
 
-    conectionTcp.send("#exit".encode('ascii'))
+    # conectionTcp.send("#exit".encode('ascii'))
     print(msg)
 
     conectionTcp.close()

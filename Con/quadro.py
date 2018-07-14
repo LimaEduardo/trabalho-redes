@@ -15,7 +15,28 @@ class QuadroDados:
         self.traduzMensagem()
     
     def getQuadro(self):
-        return self.mensagemFinal
+        mensagemSeparada = []
+        i = 0
+        print(self.mensagemFinal)
+        mensagemEmBit = self.mensagemFinal[2:]
+        while(i < len(mensagemEmBit)):
+            novaMensagem = '0b'
+            novaMensagem = mensagemEmBit[i:(i+8)]
+            mensagemSeparada.append(novaMensagem)
+            i += 8
+        
+        for posicao, mensagem in enumerate(mensagemSeparada):
+            mensagemSeparada[posicao] = str(hex(int(mensagemSeparada[posicao], 2)))[2:]
+            while(len(mensagemSeparada[posicao]) < 2):
+                mensagemSeparada[posicao] = "0" + mensagemSeparada[posicao] 
+            
+        mensagemFinal = ""
+        for mensagem in mensagemSeparada:
+            mensagemFinal += mensagem
+        
+        mensagemFinal = bytes.fromhex(mensagemFinal)
+        print(mensagemFinal)
+        return mensagemFinal
      
     def defineTamanho(self, payload):
         length = bin(len(payload))
@@ -98,4 +119,4 @@ class QuadroConfirmacao:
 
 #Exemplo de uso
 if __name__ == "__main__":
-    quadroDados = QuadroDados("192.168.0.1", "192.168.0.2", "ola mundo", 0)
+    quadroDados = QuadroDados("192.168.0.1", "192.168.0.2", "ola mundo", 0).getQuadro()
