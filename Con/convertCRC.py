@@ -32,16 +32,19 @@ class CRC:
                 # teste com o polinomio os valores da msg
                 for j in range(len(polinomio)):
                     msg[i+j] = str((int(msg[i+j]) ^ int(polinomio[j])))
-        print(msg)
+
         # enviando somente o codigo que esta ao fim da menssagem
         return ''.join(msg[-len(code):])
 
-def main():
-    msg = bin(int(binascii.hexlify("Gabriel".encode('ascii')),16))
+# def main():
+#     msg = "gabriel ribeiro"
+#     msg = bin(int(binascii.hexlify(msg.encode('ascii')),16))
     
-    m = CRC(msg)
-    code = m.gerarCRC()
-    msg = msg + code
-    print(m.verificarCRC(code))
+#     m = CRC(msg)
+#     code = m.gerarCRC()
+#     msg = msg + code
+#     print("code: " + code)
+#     if(int(m.verificarCRC(code)) == 0):
+#         print("Verificado com sucesso")
 
-main()
+# main()
