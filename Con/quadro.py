@@ -12,12 +12,13 @@ class QuadroDados:
         self.mensagemEmBits = self.preparaMensagem()
         self.codeCRC = CRC(self.mensagemEmBits).gerarCRC()
         self.mensagemFinal = self.mensagemEmBits + self.codeCRC
-        self.traduzMensagem()
+        print(self.mensagemEmBits)
+        # self.traduzMensagem()
     
     def getQuadro(self):
         mensagemSeparada = []
         i = 0
-        print(self.mensagemFinal)
+        # print(self.mensagemFinal)
         mensagemEmBit = self.mensagemFinal[2:]
         while(i < len(mensagemEmBit)):
             novaMensagem = '0b'
@@ -35,7 +36,7 @@ class QuadroDados:
             mensagemFinal += mensagem
         
         mensagemFinal = bytes.fromhex(mensagemFinal)
-        print(mensagemFinal)
+        # print(mensagemFinal)
         return mensagemFinal
      
     def defineTamanho(self, payload):
@@ -58,7 +59,7 @@ class QuadroDados:
                 ip[posicao] = "0" + ip[posicao]
             ip[posicao] = "0b" + ip[posicao]
         
-        sequencia = ""
+        sequencia = "0b"
         for byte in ip:
             sequencia += byte[2:]
         return sequencia
@@ -84,7 +85,18 @@ class QuadroDados:
         mensagem = self.mensagemFinal[87:-8]
         n = int(mensagem, 2)
         string = binascii.unhexlify('%x' % n)
-        print(string)
+        return string
+
+    def __str__(self):
+        msg =  "Delimitador : " + self.delimiter + "\n"
+        msg += "Lenght : " + self.length[2:] + "\n"
+        msg += "Sequence : " + self.sequence[2:] + "\n"
+        msg += "Destine Adress : " + self.destinationAddress[2:] + "\n"
+        msg += "Source Adress : " + self.sourceAddress[2:] + "\n"
+        msg += "Msg : " + self.payload[2:] + "\n"
+        msg += "CRC: " + self.codeCRC
+        
+        return msg
 
 class QuadroConfirmacao:
     def __init__(self, destination, source, bitSequence, ack):

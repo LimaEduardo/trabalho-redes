@@ -45,20 +45,21 @@ def main():
     # capturando o meu IP
     meuIP = conectionTcp.getsockname()[0]
 
-    msg = "Que merda doioooo990"
+    msg = "Que merda doioooo99"
     
     msg = divideMsg(msg, MAX_LENGHT)
-    print(msg)
+    # print(msg)
     for indice,mensagem in enumerate(msg):
         msg[indice] = QuadroDados(HOST, meuIP, mensagem, str(indice%2)).getQuadro()
+        # print(msg[indice])
 
         conectionTcp.send(msg[indice])
-        # buffer = conectionTcp.recv(1024)
+        buffer = conectionTcp.recv(1024)
 
-        # print("Server diz: ", buffer.decode('ascii'))
+        print("Server diz: ", buffer.decode('ascii'))
 
     # conectionTcp.send("#exit".encode('ascii'))
-    print(msg)
+    # print(msg)
 
     conectionTcp.close()
 
