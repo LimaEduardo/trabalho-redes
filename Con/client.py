@@ -28,6 +28,8 @@ def divideMsg(msg, tamMax):
 
     return listMsg
     
+# def reenviaQuadro(quadro, bitSequence)
+
 def main():
     HOST = "177.105.60.169"     # Endereco IP do Servidor 55
     PORT = 60560                 # Porta que o Servidor esta
@@ -45,7 +47,7 @@ def main():
     # capturando o meu IP
     meuIP = conn.getsockname()[0]
 
-    msg = "Aqui uma mensagem"
+    msg = "Esse E um trabalho de redes, e aqui na mensagem nao pode ter nenhum caracter acentuado"
     
     msg = divideMsg(msg, MAX_LENGHT)
     bitSequenceEnvio = ""

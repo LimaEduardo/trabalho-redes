@@ -79,7 +79,7 @@ def main():
             dados = getBit(dados)
             n = int(dados, 2)
             dados = binascii.unhexlify('%x' % n).decode('ascii')
-            
+
             # Caso a msg seja #desconectar# finalizo a conexao com servidor
             if(dados == "#desconectar#"):
                 conectado = False
