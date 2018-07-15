@@ -65,12 +65,12 @@ def reenviaQuadro(conn, quadro, bitSequence):
 
 def main():
     HOST = "177.105.60.169"     # Endereco IP do Servidor 55
-    PORT = 60560                 # Porta que o Servidor esta
+    PORT = 6060                 # Porta que o Servidor esta
 
     # HOST = "177.105.60.155"
     # PORT = 50017                 
 
-    MAX_LENGHT = 20
+    MAX_LENGHT = 255
 
     #criando socket de conexao
     conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -80,7 +80,13 @@ def main():
     # capturando o meu IP
     meuIP = conn.getsockname()[0]
 
-    msg = "Esse E um trabalho de redes, e aqui na mensagem nao pode ter nenhum caracter acentuado"
+    msg  = "Todos nos ja ouvimos falar certamente em redes de comunicacao (tambem designadas de redes informaticas ou redes de dados).\n"
+    msg += "Uma \"rede\" (na Area da informatica), e definida como um conjunto de equipamentos interligados entre si, e que permitem o transporte e troca de varios tipos de informacao entre utilizadores e sistemas."
+    msg += "O TCP e o protocolo mais usado isto porque fornece garantia na entrega de todos os pacotes entre um PC emissor e um PC receptor.\n"
+    msg += "No estabelecimento de ligacao entre emissor e receptor existe um \"pre-acordo\" denominado de Three Way Handshake (SYN, SYN-ACK, ACK)."
+    msg += "\n\nNo UDP: O UDP E um protocolo mais simples e por si so nao fornece garantia na entrega dos pacotes. No entanto, esse processo de garantia de dados pode ser simplesmente realizado pela aplicacao em si (que usa o protocolo UDP) e nao pelo protocolo.\n"
+    msg += "Basicamente, usando UDP, uma maquina emissor envia uma determinada informacao e a maquina receptor recebe essa informacao, nao existindo qualquer confirmacao dos pacotes recebidos.\n"
+    msg += "Se um pacote se perder nao existe normalmente solicitacao de reenvio, simplesmente nao existe."
     
     msg = divideMsg(msg, MAX_LENGHT)
     bitSequenceEnvio = ""
@@ -116,9 +122,10 @@ def main():
         if(bitSequenceRequest == bitSequenceEnvio):
             # Caso seja, eu vejo se mensagem foi recebida com sucesso
             if(bitSequence % 2 == 0):
-                print("quadro corrompido")
+                print("quadro corrompido... Reenviando")
+                reenviaQuadro(conn, msg[indice], bitSequenceEnvio)
             else:
-                print("quadro enviado ao servidor com sucesso")
+                print(indice + 1," º quadro enviado ao servidor com sucesso")
         else:
             # Caso nao seja, o quadro recebido não é referente ao ultimo enviado: reenvia-lo
             reenviaQuadro(conn, msg[indice], bitSequenceEnvio)

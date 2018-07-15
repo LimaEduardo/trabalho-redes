@@ -7,7 +7,7 @@ from quadro import QuadroConfirmacao
 
 def main():
     HOST = "177.105.60.169"              # Endereco IP do Servidor
-    PORT = 60560                          # Porta que o Servidor esta
+    PORT = 6060                          # Porta que o Servidor esta
 
     #criando socket de conexao
     conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -23,7 +23,7 @@ def main():
 
         # Efetuando a conexao com cliente
         con, cliente = conn.accept()
-        print("Concetado por", cliente)
+        print("Concetado por", cliente, "\n\n")
         ultimoSeq = None
         conectado = True
         msgfinal = ""
@@ -93,7 +93,7 @@ def main():
 
         print(cliente, str(msgfinal))
 
-        print("Finalizando conexao do cliente", cliente)
+        print("\n\nFinalizando conexao do cliente", cliente)
         con.close()
         return
 
