@@ -35,17 +35,17 @@ def main():
     # HOST = "177.105.60.155"
     # PORT = 50017                 
 
-    MAX_LENGHT = 20
+    MAX_LENGHT = 50
 
     #criando socket de conexao
-    conectionTcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     dest = (HOST, PORT)
-    conectionTcp.connect(dest)
+    conn.connect(dest)
 
     # capturando o meu IP
-    meuIP = conectionTcp.getsockname()[0]
+    meuIP = conn.getsockname()[0]
 
-    msg = "Que merda doioooo99"
+    msg = "Aqui uma mensagem de tamanho menor que MAX_LENGHT"
     
     msg = divideMsg(msg, MAX_LENGHT)
     # print(msg)
@@ -53,14 +53,14 @@ def main():
         msg[indice] = QuadroDados(HOST, meuIP, mensagem, str(indice%2)).getQuadro()
         # print(msg[indice])
 
-        conectionTcp.send(msg[indice])
-        buffer = conectionTcp.recv(1024)
+        conn.send(msg[indice])
+        buffer = conn.recv(1024)
 
         print("Server diz: ", buffer.decode('ascii'))
 
-    # conectionTcp.send("#exit".encode('ascii'))
+    # conn.send("#exit".encode('ascii'))
     # print(msg)
 
-    conectionTcp.close()
+    conn.close()
 
 main()

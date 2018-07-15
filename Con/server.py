@@ -9,6 +9,7 @@ def main():
 
     #criando socket de conexao
     conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    meuIP = conn.getsockname()[0]
 
     # host de origem e porta de origem
     orig = (HOST, PORT)
@@ -22,7 +23,6 @@ def main():
         con, cliente = conn.accept()
         print("Concetado por", cliente)
         
-
         
         # byte a verificar é uma lista com todos bytes antes do codigo crc, para fazer verificação
         byteAVerificar = []
@@ -40,10 +40,10 @@ def main():
         cabecalho += juntaBytes(getBytes)
 
         # pegando dados da msg (cabecalho[1] é lenght, que refere ao tamanho da mensagem)
-        dados = b''
+        # dados = b''
         getBytes = geraListaBytes(con, cabecalho[1])
         byteAVerificar += getBytes
-        dados += juntaBytes(getBytes)
+        dados = getBytes
 
         # pegando codigo CRC (2 bytes apos a msg)
         getBytes = geraListaBytes(con, 2)
@@ -55,42 +55,16 @@ def main():
         crcG = CRC(msgCabeca)
         if(crcG.verificarCRC(codeCrc)):
             resposta = "Menssagem recebida com sucesso"
+            # msg[indice] = QuadroDados(HOST, meuIP, mensagem, str(indice%2)).getQuadro()
+
         else:
             resposta = "Mensagem corrompida"
-        
-            # cabecalho = b''
-            # cabecalho += con.recv(1)
-            
-            # # Tamanho do cabeçalho ate o campo de dados = 11 bytes
-            # for i in range(11):
-            #     cabecalho += con.recv(1)
-            # meusBytes += cabecalho
 
-            # quantDados = cabecalho[1]
+        dados = getBit(dados)
+        n = int(dados, 2)
+        dados = binascii.unhexlify('%x' % n).decode('ascii')
+        print(dados)
 
-            # dados = []
-            # for i in range(quantDados):
-            #     dados += con.recv(1)
-            
-            # meusBytes += dados
-            # print(dados.decode('ascii'))
-            # codCRC = con.recv(2)
-            # meusBytes += codCRC
-
-            # print("meus bytes: ", meusBytes)
-            # a = 1
-            # testa Caso tenha recebido uma mensagem vazia
-            # if cabecalho:
-            #     msg = dados.decode('ascii')
-                
-            #     code = codCRC.decode('ascii')
-            #     msg = msg[:-17]
-
-            #     # mensagem = msg[87:]
-            #     # print(mensagem)
-            #     # n = int(mensagem, 2)
-            #     # string = binascii.unhexlify('%x' % n)
-                
             #     msgfinal += msg 
             #     # msg = int(msg)
             #     print(cliente, str(msgfinal))
@@ -107,12 +81,13 @@ def main():
             # Resposta do servidor ao cliente
 
         con.sendall(resposta.encode('ascii'))
-        return
+
         
         # print(cliente, str(msgfinal))
 
         print("Finalizando conexao do cliente", cliente)
         con.close()
+        return
 
 
 def getBit(listaB):
