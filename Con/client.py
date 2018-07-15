@@ -35,7 +35,7 @@ def main():
     # HOST = "177.105.60.155"
     # PORT = 50017                 
 
-    MAX_LENGHT = 50
+    MAX_LENGHT = 20
 
     #criando socket de conexao
     conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -45,36 +45,54 @@ def main():
     # capturando o meu IP
     meuIP = conn.getsockname()[0]
 
-    msg = "Aqui uma mensagem de tamanho menor que MAX_LENGHT"
+    msg = "Aqui uma mensagem"
     
     msg = divideMsg(msg, MAX_LENGHT)
-    # print(msg)
-    for indice,mensagem in enumerate(msg):
-        msg[indice] = QuadroDados(HOST, meuIP, mensagem, str(indice%2)).getQuadro()
-        # print(msg[indice])
+    bitSequenceEnvio = ""
 
+    for indice,mensagem in enumerate(msg):
+        bitSequenceEnvio = str(indice%2)
+
+        # Criando quadro de envio da mensagem e colocando na posicao de msg
+        msg[indice] = QuadroDados(HOST, meuIP, mensagem, bitSequenceEnvio).getQuadro()
+
+        # Enviando mensagem à quem estiver conectado
         conn.send(msg[indice])
 
+        # Capturando o quadro de confirmaçao que é enviado pela conexao
         quadConfirmacao = b''
         # capturando 'bit delimiter'
         quadConfirmacao += conn.recv(1)
+        # Caso esteja vazio, quer dizer que quadro se perdeu no caminho
         if(len(quadConfirmacao) <= 0):
+            # ------> aqui deveria reenviar o quadro <------
             continue
         
         # Capturando 'bit sequence'
         quadConfirmacao += conn.recv(1)
         bitSequence = quadConfirmacao[1]
-        print(quadConfirmacao)
         for i in range(8):
             quadConfirmacao += conn.recv(1)
         
-        if(bitSequence % 2 == 0):
-            print("Menssagem corrompida")
-        else:
-            print("Mensagem eviada ao servidor com sucesso")
 
-    # conn.send("#exit".encode('ascii'))
-    # print(msg)
+        bitSequenceRequest = ['0', '1'] [bitSequence >= 128]
+        # Teste se resquest é referente ao ultimo quadro enviado pelo cliente
+
+        if(bitSequenceRequest == bitSequenceEnvio):
+            # Caso seja, eu vejo se mensagem foi recebida com sucesso
+            if(bitSequence % 2 == 0):
+                print("quadro corrompido")
+            else:
+                print("quadro enviado ao servidor com sucesso")
+        else:
+            # Caso nao seja, o quadro recebido não é referente ao ultimo enviado: 
+            # ------> aqui deveria reenviar o quadro <------
+            print("A confirmação recebida não corresponde com o quadro enviado")
+    
+    # Enviando pacote de desconexao
+    bitSequenceEnvio = ['1', '0'][bitSequenceEnvio == '1']
+    msgDesconexao = QuadroDados(HOST, meuIP, "#desconectar#", bitSequenceEnvio).getQuadro()
+    conn.send(msgDesconexao)
 
     conn.close()
 
