@@ -2,10 +2,12 @@ import socket
 import binascii
 
 from convertCRC import CRC
+from quadro import QuadroConfirmacao
+
 
 def main():
     HOST = "177.105.60.169"              # Endereco IP do Servidor
-    PORT = 6060                          # Porta que o Servidor esta
+    PORT = 60560                          # Porta que o Servidor esta
 
     #criando socket de conexao
     conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -18,76 +20,62 @@ def main():
     conn.listen(1)
     # codExit = "#exit"
     # msgfinal = ""
-    while True:
-        # Efetuando a conexao com cliente
-        con, cliente = conn.accept()
-        print("Concetado por", cliente)
-        
-        
-        # byte a verificar é uma lista com todos bytes antes do codigo crc, para fazer verificação
-        byteAVerificar = []
+    # while True:
+    # Efetuando a conexao com cliente
+    con, cliente = conn.accept()
+    print("Concetado por", cliente)
+    
+    # byte a verificar é uma lista com todos bytes antes do codigo crc, para fazer verificação
+    byteAVerificar = []
 
-        # capturando o delimitador
-        cabecalho = b''
-        cabecalho += con.recv(1)
-        byteAVerificar.append(cabecalho)
-        if(len(cabecalho) <= 0):
-            continue
+    # capturando o delimitador
+    cabecalho = b''
+    cabecalho += con.recv(1)
+    byteAVerificar.append(cabecalho)
+    if(len(cabecalho) <= 0):
+        print("merda")
 
-        # pegando dados de todo cabecalho (10bytes apos o delimitador)
-        getBytes = geraListaBytes(con, 10)
-        byteAVerificar += getBytes
-        cabecalho += juntaBytes(getBytes)
+    # pegando dados de todo cabecalho (10bytes apos o delimitador)
+    getBytes = geraListaBytes(con, 10)
+    byteAVerificar += getBytes
+    cabecalho += juntaBytes(getBytes)
 
-        # pegando dados da msg (cabecalho[1] é lenght, que refere ao tamanho da mensagem)
-        # dados = b''
-        getBytes = geraListaBytes(con, cabecalho[1])
-        byteAVerificar += getBytes
-        dados = getBytes
+    # pegando dados da msg (cabecalho[1] é lenght, que refere ao tamanho da mensagem)
+    getBytes = geraListaBytes(con, cabecalho[1])
+    byteAVerificar += getBytes
+    dados = getBytes
 
-        # pegando codigo CRC (2 bytes apos a msg)
-        getBytes = geraListaBytes(con, 2)
-        # codeCrc += juntaBytes(getBytes)
-        codeCrc = getBit(getBytes)[2:]
-        
-        msgCabeca = getBit(byteAVerificar)
+    # pegando codigo CRC (2 bytes apos a msg)
+    getBytes = geraListaBytes(con, 2)
+    codeCrc = getBit(getBytes)[2:]
+    
+    msgCabeca = getBit(byteAVerificar)
 
-        crcG = CRC(msgCabeca)
-        if(crcG.verificarCRC(codeCrc)):
-            resposta = "Menssagem recebida com sucesso"
-            # msg[indice] = QuadroDados(HOST, meuIP, mensagem, str(indice%2)).getQuadro()
+    crcG = CRC(msgCabeca)
+    # Teste o crc, ACK é o ultimo bit do campo sequence, ele refere se a mensagem foi enviada com sucesso
+    if(crcG.verificarCRC(codeCrc)):
+        # "Menssagem recebida com sucesso"
+        meuAck = 1
+    else:
+        # "Mensagem corrompida"
+        meuAck = 0
 
-        else:
-            resposta = "Mensagem corrompida"
+    bitSequence = [0, 1][cabecalho[2] == 128]
+    quadroConfirmacao = QuadroConfirmacao(cliente[0], HOST, bitSequence, meuAck).getQuadro()
 
-        dados = getBit(dados)
-        n = int(dados, 2)
-        dados = binascii.unhexlify('%x' % n).decode('ascii')
-        print(dados)
+    dados = getBit(dados)
+    n = int(dados, 2)
+    dados = binascii.unhexlify('%x' % n).decode('ascii')
+    print(dados)
 
-            #     msgfinal += msg 
-            #     # msg = int(msg)
-            #     print(cliente, str(msgfinal))
+    print(quadroConfirmacao)
+    con.sendall(quadroConfirmacao)
 
-            #     crcG = CRC(msg)
-            #     if(crcG.verificarCRC(code)):
-            #         resposta = "Menssagem recebida com sucesso"
-            #     else:
-            #         resposta = "Mensagem corrompida"
-            # else:
-            #     print("Conexao: ", cliente, " desconectado")
-            #     return
+    # print(cliente, str(msgfinal))
 
-            # Resposta do servidor ao cliente
-
-        con.sendall(resposta.encode('ascii'))
-
-        
-        # print(cliente, str(msgfinal))
-
-        print("Finalizando conexao do cliente", cliente)
-        con.close()
-        return
+    print("Finalizando conexao do cliente", cliente)
+    con.close()
+    # return
 
 
 def getBit(listaB):

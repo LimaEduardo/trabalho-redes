@@ -30,7 +30,7 @@ def divideMsg(msg, tamMax):
     
 def main():
     HOST = "177.105.60.169"     # Endereco IP do Servidor 55
-    PORT = 6060                 # Porta que o Servidor esta
+    PORT = 60560                 # Porta que o Servidor esta
 
     # HOST = "177.105.60.155"
     # PORT = 50017                 
@@ -54,9 +54,24 @@ def main():
         # print(msg[indice])
 
         conn.send(msg[indice])
-        buffer = conn.recv(1024)
 
-        print("Server diz: ", buffer.decode('ascii'))
+        quadConfirmacao = b''
+        # capturando 'bit delimiter'
+        quadConfirmacao += conn.recv(1)
+        if(len(quadConfirmacao) <= 0):
+            continue
+        
+        # Capturando 'bit sequence'
+        quadConfirmacao += conn.recv(1)
+        bitSequence = quadConfirmacao[1]
+        print(quadConfirmacao)
+        for i in range(8):
+            quadConfirmacao += conn.recv(1)
+        
+        if(bitSequence % 2 == 0):
+            print("Menssagem corrompida")
+        else:
+            print("Mensagem eviada ao servidor com sucesso")
 
     # conn.send("#exit".encode('ascii'))
     # print(msg)
