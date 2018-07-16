@@ -122,10 +122,10 @@ def main():
         if(bitSequenceRequest == bitSequenceEnvio):
             # Caso seja, eu vejo se mensagem foi recebida com sucesso
             if(bitSequence % 2 == 0):
-                print("quadro corrompido... Reenviando")
+                print("Quadro corrompido... Reenviando")
                 reenviaQuadro(conn, msg[indice], bitSequenceEnvio)
             else:
-                print(indice + 1," º quadro enviado ao servidor com sucesso")
+                print(indice + 1," º Quadro enviado ao servidor com sucesso")
         else:
             # Caso nao seja, o quadro recebido não é referente ao ultimo enviado: reenvia-lo
             reenviaQuadro(conn, msg[indice], bitSequenceEnvio)
